@@ -33,6 +33,7 @@ Every run prints a final line `RESULT status=<passed|failed|...> exit=<code> cle
 | Mock / block network requests | `npm run example:network` | `network.png` |
 | Puppeteer instead of Playwright | `npm run example:puppeteer:screenshot`, `npm run example:puppeteer:persistence` | |
 | Python | `python examples/python/playwright/launch_profile_and_screenshot.py` (venv, see README) | |
+| Launch via MCP, then browse with Playwright | `npm run example:mcp -- --session-id <this machine>` (needs `INCOGNITON_MCP_TOKEN`) | `mcp-attached.png`; see `docs/mcp.md` |
 | Your own logic | edit `starter/src/workflows/`, run `npm start -- --workflow <name>` | `output/starter/` |
 
 All scripts accept `--help`; `--headed` shows the browser window.
@@ -76,7 +77,7 @@ npm run test:live
 3. **Respect ownership.** Stop only what your run launched (graceful CDP `Browser.close`, wait for `Ready`, `profile.stop()` as fallback). Attached sessions only disconnect. Delete only profiles recorded in `.incogniton/created-profiles.json`. Never force-stop or force local/cloud sync implicitly. Never launch, stop or delete a user's other profiles.
 4. **Close the tab you opened** before closing the browser (Chrome restores tabs).
 5. **No fixed sleeps for readiness.** Poll with deadlines; retry only read-only steps (connecting), never launches, creates or submissions.
-6. **No secrets in output.** Do not log profile payloads (they contain proxy credentials), cookies or tokens. Use `sanitize()`.
+6. **No secrets in output.** Do not log profile payloads (they contain proxy credentials), cookies or tokens. Use `sanitize()`. The MCP token (`INCOGNITON_MCP_TOKEN`) lives only in `.env` or the MCP client config; never write it into files, logs, commits or chat.
 7. **When you add or change an example:** update `examples/index.json`, add an npm script for TypeScript examples, run `npm run docs:generate`, `npm run check`, and the live run for that example (`npm run test:live -- --only <id>`).
 
 ## When can something be called "tested"?

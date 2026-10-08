@@ -58,6 +58,7 @@ const PREREQ_TEXT: Record<Prerequisite, string> = {
   'two-profiles': 'At least two distinct, closed test profiles (`--profile-ids` or `INCOGNITON_PROFILE_IDS`). Create test profiles with `npm run profiles -- create`.',
   session: 'A browser started with `npm run session -- start` (see Install and run).',
   python: 'Python 3.10+ (tested 3.12.7) with the locked dependencies installed in a virtual environment (see Install and run).',
+  mcp: 'An MCP token in `.env` as `INCOGNITON_MCP_TOKEN` (Incogniton app: My Account > Settings > MCP Token; treat it like a password, `.env` is git-ignored). If your account has several logged-in desktop sessions, `INCOGNITON_MCP_SESSION_ID` (or `--session-id`) for this machine. The script must run on the machine where the Incogniton app runs. See [Using Incogniton with AI assistants (MCP)](../mcp.md).',
 };
 
 function installSteps(entry: ExampleEntry): string {
@@ -168,6 +169,7 @@ function llmsTxt(): string {
     `- [Troubleshooting and exit codes](${manifest.repository}/blob/main/docs/troubleshooting.md)`,
     `- [Compatibility data](${manifest.repository}/blob/main/docs/compatibility.json)`,
     `- [Unattended execution](${manifest.repository}/blob/main/docs/unattended-execution.md)`,
+    `- [AI assistants via MCP (hosted Incogniton MCP server, 19 tools, cdp_url hand-off)](${manifest.repository}/blob/main/docs/mcp.md)`,
     '',
     '## Examples',
     ...manifest.examples.map((e) => `- [${e.title}](${manifest.repository}/blob/main/${e.doc}): ${e.question}`),

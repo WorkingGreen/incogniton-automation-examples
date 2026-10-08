@@ -204,8 +204,8 @@ async function waitForSettledTabs(cdpUrl: string, deadline: number, signal?: Abo
 
 export interface CleanupReport {
   profileId: string;
-  /** graceful: browser closed over CDP; api-stop: profile.stop(); detached: left running; none: nothing to do */
-  method: 'graceful' | 'api-stop' | 'detached' | 'none';
+  /** graceful: browser closed over CDP; api-stop: profile.stop(); mcp-stop: MCP stop_profile; detached: left running; none: nothing to do */
+  method: 'graceful' | 'api-stop' | 'mcp-stop' | 'detached' | 'none';
   ok: boolean;
   /** True when the app reported Syncing/Stopping/Uploading during shutdown. */
   sawSyncStatus: boolean;

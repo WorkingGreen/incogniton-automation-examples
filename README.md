@@ -88,6 +88,7 @@ Each link is a standalone page with prerequisites, the exact command, complete c
 | [How do I run multiple Incogniton profiles concurrently?](docs/examples/run-multiple-profiles.md) | TypeScript · playwright | `npm run example:multi -- --profile-ids <id1>,<id2>` | verified 2026-10-08 |
 | [How do I connect to an existing Incogniton profile without restarting it?](docs/examples/attach-to-running-profile.md) | TypeScript · playwright | `npm run example:attach` | verified 2026-10-08 |
 | [How do I create an Incogniton profile from code?](docs/examples/create-and-clean-up-profile.md) | TypeScript · playwright | `npm run example:temp-profile` | verified 2026-10-08 |
+| [How do I use Incogniton with an AI assistant through MCP?](docs/examples/launch-with-mcp-and-attach-playwright.md) | TypeScript · playwright | `npm run example:mcp` | unverified · [known issue](docs/examples/launch-with-mcp-and-attach-playwright.md#support-status) |
 | [How do I scrape a paginated table with Playwright in Incogniton?](docs/examples/extract-paginated-data.md) | TypeScript · playwright | `npm run example:extract` | verified 2026-10-08 |
 | [How do I upload and download files with Playwright in Incogniton?](docs/examples/upload-and-download-files.md) | TypeScript · playwright | `npm run example:files` | verified 2026-10-08 |
 | [How do I intercept or mock network requests in Incogniton automation?](docs/examples/intercept-network-requests.md) | TypeScript · playwright | `npm run example:network` | verified 2026-10-08 |
@@ -111,6 +112,16 @@ npm run example:game -- --headed
 ```bash
 npm run example:multi -- --profile-ids <id1>,<id2>
 ```
+
+## AI assistants (MCP)
+
+Incogniton has a hosted MCP server, so Claude Code, Claude Desktop, Cursor or VS Code can manage and launch your profiles. Get a token in the app (My Account → Settings → MCP Token), then, for example in Claude Code:
+
+```bash
+claude mcp add incogniton --scope user --env INCOGNITON_MCP_TOKEN=mcp_live_YOUR_TOKEN -- npx -y @incogniton/mcp
+```
+
+MCP launches profiles but does not browse. For page work, attach Playwright to the `cdp_url` that `get_launch_status` returns ([runnable example](docs/examples/launch-with-mcp-and-attach-playwright.md)). Setup for every client, the 19 tools, example prompts and limits: [docs/mcp.md](docs/mcp.md).
 
 ## Python examples
 
@@ -182,6 +193,7 @@ Edit [starter/src/workflows/example-workflow.ts](starter/src/workflows/example-w
 
 ## Documentation
 
+- [Using Incogniton with AI assistants (MCP)](docs/mcp.md)
 - [Lifecycle and persistence](docs/lifecycle-and-persistence.md): launch, contexts, graceful stop, what persists
 - [Troubleshooting and exit codes](docs/troubleshooting.md)
 - [Unattended and scheduled execution](docs/unattended-execution.md)

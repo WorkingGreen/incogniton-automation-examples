@@ -20,6 +20,10 @@ test('sanitize hides credentials in URLs and JSON-like fields', () => {
   const payload = JSON.stringify({ ['proxy_' + 'password']: 'not-a-real-secret', proxy_username: 'bob' });
   assert.equal(sanitize(payload), '{"proxy_password":"***","proxy_username":"***"}');
   assert.equal(sanitize('x'.repeat(20), 5), 'xxxxx…');
+  // MCP tokens and Bearer headers never reach logs or result.json.
+  const token = 'mcp_live_' + 'ab12'.repeat(8);
+  assert.equal(sanitize(`token ${token} used`), 'token mcp_live_*** used');
+  assert.equal(sanitize(`Authorization: Bearer ${token}`), 'Authorization: Bearer ***');
 });
 
 /** Builds an RGB PNG with filter type 1 (Sub) rows to exercise unfiltering. */

@@ -84,6 +84,10 @@ for (const entry of examples) {
     record({ id: entry.id, kind: 'example', status: 'not-run', exitCode: null, durationMs: 0, command, note: python ? 'skipped by flag' : 'no .venv with requirements.lock installed' });
     continue;
   }
+  if (needs.has('mcp') && (!config.mcpToken || !config.mcpSessionId)) {
+    record({ id: entry.id, kind: 'example', status: 'not-run', exitCode: null, durationMs: 0, command, note: 'needs INCOGNITON_MCP_TOKEN and INCOGNITON_MCP_SESSION_ID' });
+    continue;
+  }
   if (needs.has('two-profiles') && multiIds.length < 2) {
     for (let i = 0; i < 2; i++) temporary.push(await createRecordedProfile(api, { name: `starter-verify-${i + 1}`, createdBy: 'scripts/verify-examples.ts' }));
     multiIds = temporary;

@@ -250,6 +250,7 @@ More: [troubleshooting](../troubleshooting.md). Run `npm run doctor` first.
 
 - [Keep cookies, localStorage and IndexedDB between Incogniton automation runs](reuse-profile-session.md)
 - [Launch an Incogniton profile with Playwright and take a screenshot](launch-profile-and-screenshot.md)
+- [Launch an Incogniton profile through MCP and control it with Playwright](launch-with-mcp-and-attach-playwright.md)
 
 ## Source
 

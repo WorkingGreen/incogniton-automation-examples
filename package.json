@@ -29,6 +29,7 @@
     "example:extract": "tsx examples/playwright/extract-paginated-data.ts",
     "example:files": "tsx examples/playwright/upload-and-download-files.ts",
     "example:network": "tsx examples/playwright/intercept-network-requests.ts",
+    "example:mcp": "tsx examples/mcp/launch-with-mcp-and-attach-playwright.ts",
     "example:puppeteer:screenshot": "tsx examples/puppeteer/launch-profile-and-screenshot.ts",
     "example:puppeteer:persistence": "tsx examples/puppeteer/reuse-profile-session.ts",
     "fixtures": "tsx scripts/serve-fixtures.ts",

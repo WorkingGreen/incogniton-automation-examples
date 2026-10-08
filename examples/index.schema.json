@@ -28,7 +28,7 @@
           "command": { "type": "string", "description": "Exact command to run from the repository root." },
           "knownIssue": { "type": "string", "description": "Known product issue affecting this example; shown in docs and copied into compatibility.json notes." },
           "selfContained": { "type": "boolean", "description": "True when the source uses only the SDK, the framework and Node/Python built-ins." },
-          "prerequisites": { "type": "array", "items": { "enum": ["api", "profile", "two-profiles", "session", "python"] } },
+          "prerequisites": { "type": "array", "items": { "enum": ["api", "profile", "two-profiles", "session", "python", "mcp"] } },
           "configKeys": { "type": "array", "items": { "type": "string" } },
           "expectedResult": { "type": "string", "description": "Observable pass condition." },
           "lifecycle": { "type": "string", "description": "Launch/stop/persistence behaviour." },
@@ -48,7 +48,7 @@
             "required": ["args", "needs"],
             "properties": {
               "args": { "type": "array", "items": { "type": "string" } },
-              "needs": { "type": "array", "items": { "enum": ["api", "profile", "two-profiles", "session", "python"] } }
+              "needs": { "type": "array", "items": { "enum": ["api", "profile", "two-profiles", "session", "python", "mcp"] } }
             }
           }
         }

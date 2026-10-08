@@ -11,6 +11,7 @@ Key facts: the Incogniton desktop app must be running and logged in (Windows/mac
 - [Troubleshooting and exit codes](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/troubleshooting.md)
 - [Compatibility data](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/compatibility.json)
 - [Unattended execution](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/unattended-execution.md)
+- [AI assistants via MCP (hosted Incogniton MCP server, 19 tools, cdp_url hand-off)](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/mcp.md)
 
 ## Examples
 - [Launch an Incogniton profile with Playwright and take a screenshot](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/launch-profile-and-screenshot.md): How do I automate Incogniton with Playwright?
@@ -21,6 +22,7 @@ Key facts: the Incogniton desktop app must be running and logged in (Windows/mac
 - [Run multiple Incogniton profiles concurrently with Playwright](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/run-multiple-profiles.md): How do I run multiple Incogniton profiles concurrently?
 - [Attach Playwright to an Incogniton profile that is already running](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/attach-to-running-profile.md): How do I connect to an existing Incogniton profile without restarting it?
 - [Create and delete a temporary Incogniton profile with the Node.js SDK](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/create-and-clean-up-profile.md): How do I create an Incogniton profile from code?
+- [Launch an Incogniton profile through MCP and control it with Playwright](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/launch-with-mcp-and-attach-playwright.md): How do I use Incogniton with an AI assistant through MCP?
 - [Extract a paginated table to JSON in an Incogniton profile](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/extract-paginated-data.md): How do I scrape a paginated table with Playwright in Incogniton?
 - [Upload and download files in an Incogniton profile with Playwright](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/upload-and-download-files.md): How do I upload and download files with Playwright in Incogniton?
 - [Mock and block network requests in an Incogniton profile with Playwright](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/intercept-network-requests.md): How do I intercept or mock network requests in Incogniton automation?

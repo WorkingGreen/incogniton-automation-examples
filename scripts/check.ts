@@ -66,7 +66,7 @@ function allFiles(dir: string): string[] {
 // Prefer git's view (tracked + untracked, honouring .gitignore); fall back to a directory walk without git.
 const gitList = spawnSync('git', ['ls-files', '--cached', '--others', '--exclude-standard'], { encoding: 'utf8' });
 const tracked = gitList.status === 0 && gitList.stdout ? gitList.stdout.split('\n').filter(Boolean) : allFiles('.');
-const leakPatterns = [/[A-Z]:\\(?:Users|incogniton)/i, /IncognitonV5|IncognitonAPI_V5|incogniton-api-js-client|incogniton-api-python-client/, /proxy_password"\s*:\s*"[^"*]/i, /-----BEGIN [A-Z ]*PRIVATE KEY-----/];
+const leakPatterns = [/[A-Z]:\\(?:Users|incogniton)/i, /IncognitonV5|IncognitonAPI_V5|incogniton-api-js-client|incogniton-api-python-client/, /proxy_password"\s*:\s*"[^"*]/i, /-----BEGIN [A-Z ]*PRIVATE KEY-----/, /mcp_live_[0-9a-f]{16,}/];
 const leaks: string[] = [];
 for (const file of tracked) {
   if (!/\.(ts|py|md|json|txt|yml|yaml|html|example|toml)$/.test(file) || file.endsWith('package-lock.json') || file === 'scripts/check.ts') continue;

@@ -2,7 +2,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { CONFIG_KEYS } from './config.js';
 
-export type Prerequisite = 'api' | 'profile' | 'two-profiles' | 'session' | 'python';
+export type Prerequisite = 'api' | 'profile' | 'two-profiles' | 'session' | 'python' | 'mcp';
 
 export interface ExampleEntry {
   id: string;
@@ -40,7 +40,7 @@ export function readManifest(path = MANIFEST_PATH): Manifest {
 }
 
 const REQUIRED: Array<keyof ExampleEntry> = ['id', 'title', 'question', 'questions', 'summary', 'language', 'framework', 'source', 'doc', 'command', 'prerequisites', 'configKeys', 'expectedResult', 'lifecycle', 'failures', 'related', 'verify'];
-const PREREQS = new Set<Prerequisite>(['api', 'profile', 'two-profiles', 'session', 'python']);
+const PREREQS = new Set<Prerequisite>(['api', 'profile', 'two-profiles', 'session', 'python', 'mcp']);
 
 /** Returns a list of problems; empty when the manifest is valid and every reference resolves. */
 export function validateManifest(manifest: Manifest, scripts: Record<string, string>): string[] {

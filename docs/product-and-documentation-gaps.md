@@ -38,3 +38,15 @@ Findings from building and verifying this repository (2026-10-08). "Verified" me
 - Fingerprint behaviour in additional (non-default) browser contexts.
 - Cloud-sync completion: the API gives no signal that an upload succeeded.
 - Hosted CI with a live app: blocked (needs a logged-in desktop app); see [validation-report.md](validation-report.md).
+
+## MCP
+
+Observed against the hosted MCP server (`incogniton-mcp` 1.0.0) on 2026-10-08.
+
+| Gap | Impact | Workaround in this repository | Suggested fix |
+| --- | --- | --- | --- |
+| `stop_profile` can attach the stop to an **older** launch of the same profile whose browser was closed without MCP (for example via CDP `Browser.close`); the newer launch keeps reporting `LAUNCHED` | `get_launch_status` shows a running browser that is gone; polling by launch id never sees the stop | Poll by the stop request's own id | Mark a launch closed when the desktop reports the browser exited, whatever closed it; attach stops to the newest open launch |
+| Several "active" desktop sessions, all named "Unknown Device"; `launch_profile` then refuses to choose | An AI client cannot tell which device a launch will open on; a wrong guess opens the profile on another computer | Require an explicit session id; tell the user where to find it | Send device names with every session; expire sessions that stopped polling; expose "this device" to local clients |
+| `get_launch_status` by `request_id` returns prose without `cdp_url`; by `profile_browser_ID` it returns JSON with `cdp_url` | Clients following the tool description ("call get_launch_status with the request_id") don't get the endpoint | Query by profile and match the request id | Return the same JSON entry for both query forms |
+| Tool results are prose with an embedded JSON block | Programmatic clients must scrape | `extractJson` in lib/mcp-client.ts | Also return MCP `structuredContent` |
+| The `notifications/initialized` notification gets a JSON-RPC error response; the server answers `protocolVersion` 2024-11-05 to the bridge's 2026-05-15 | Strict MCP clients may log errors or refuse | None needed for the bridge | Don't respond to notifications; negotiate the version the client asked for when supported |

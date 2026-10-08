@@ -122,6 +122,8 @@ export function classifyLaunchMessage(message: string): { kind: FailureKind; hin
 /** Message text that is safe to print: no URLs with credentials, no long payloads. */
 export function sanitize(text: string, max = 500): string {
   const cleaned = text
+    .replace(/(Bearer\s+)[A-Za-z0-9._~+/-]+=*/gi, '$1***')
+    .replace(/mcp_(live|test)_[A-Za-z0-9]+/g, 'mcp_$1_***')
     .replace(/(\/\/)[^/\s:@]+:[^/\s@]+@/g, '$1***:***@')
     .replace(/("?(?:proxy_)?(?:password|username|token|cookie)"?\s*[:=]\s*)"[^"]*"/gi, '$1"***"');
   return cleaned.length > max ? `${cleaned.slice(0, max)}…` : cleaned;

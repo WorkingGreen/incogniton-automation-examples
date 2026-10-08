@@ -62,6 +62,11 @@ The two-profile example used two temporary profiles that the runner created and 
 
 Not tested live: a CDP connection failure after a successful launch (no reliable way to induce it), and real SIGINT delivery on Windows (Node cannot send a catchable SIGINT to a child process there). Cancellation is covered by the in-process AbortSignal check above.
 
+## MCP example and patched desktop builds
+
+- `launch-with-mcp-and-attach-playwright` (added after the release-candidate run): against the **development build** of the desktop app (2026-10-08) it passed in all modes: refusal with a session list when several sessions exist and no session is given (exit 2, nothing launched); graceful stop (`cleanup ok via graceful, final status Ready`); `--stop-with-mcp` (`mcp:STOPPED`, twice). Against the **installed release** the launch and stop worked but no `cdp_url` was returned, so the example exits 7 with the server's reason; this is recorded as its known issue and in `docs/compatibility.json` it stays unverified.
+- The full live suite was also run against a development build containing four desktop-app fixes (graceful stop, already-open launch handling, Windows process query, Selenium session watcher): 22/22. Those results are not in `docs/compatibility.json`, which describes the released app only.
+
 ## Clean-checkout installation test
 
 A fresh `git clone` of the branch into an empty temporary directory was used, with PATH limited to the Node binary directory and core utilities. There was no global TypeScript runner, no existing `node_modules`, no `.env` and no sibling SDK checkout. The lockfile resolves only from `registry.npmjs.org`.

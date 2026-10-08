@@ -13,6 +13,7 @@ Each page stands alone: prerequisites, exact commands, complete code, expected r
 | [How do I run multiple Incogniton profiles concurrently?](run-multiple-profiles.md) | TypeScript · playwright | `npm run example:multi -- --profile-ids <id1>,<id2>` | verified 2026-10-08 |
 | [How do I connect to an existing Incogniton profile without restarting it?](attach-to-running-profile.md) | TypeScript · playwright | `npm run example:attach` | verified 2026-10-08 |
 | [How do I create an Incogniton profile from code?](create-and-clean-up-profile.md) | TypeScript · playwright | `npm run example:temp-profile` | verified 2026-10-08 |
+| [How do I use Incogniton with an AI assistant through MCP?](launch-with-mcp-and-attach-playwright.md) | TypeScript · playwright | `npm run example:mcp` | unverified · [known issue](launch-with-mcp-and-attach-playwright.md#support-status) |
 | [How do I scrape a paginated table with Playwright in Incogniton?](extract-paginated-data.md) | TypeScript · playwright | `npm run example:extract` | verified 2026-10-08 |
 | [How do I upload and download files with Playwright in Incogniton?](upload-and-download-files.md) | TypeScript · playwright | `npm run example:files` | verified 2026-10-08 |
 | [How do I intercept or mock network requests in Incogniton automation?](intercept-network-requests.md) | TypeScript · playwright | `npm run example:network` | verified 2026-10-08 |

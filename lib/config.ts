@@ -34,6 +34,12 @@ export interface StarterConfig {
   fixturePort: number;
   /** Second fixture port, used as a separate origin for cross-origin iframes. */
   fixtureCrossOriginPort: number;
+  /** MCP token (secret) for the MCP examples; empty when not configured. */
+  mcpToken: string;
+  /** Desktop session id for MCP launches; empty when not configured. */
+  mcpSessionId: string;
+  /** Hosted MCP endpoint. */
+  mcpUrl: string;
 }
 
 export interface ConfigKeyInfo {
@@ -57,6 +63,9 @@ export const CONFIG_KEYS: ConfigKeyInfo[] = [
   { env: 'MAX_CONCURRENCY', key: 'maxConcurrency', default: '2', description: 'Maximum profiles run-multiple-profiles drives at once. Practical limits depend on your machine and plan.' },
   { env: 'FIXTURE_PORT', key: 'fixturePort', default: '47811', description: 'Port of the local fixture server. Keep it stable: cookies and localStorage belong to the origin http://127.0.0.1:<port>.' },
   { env: 'FIXTURE_CROSS_ORIGIN_PORT', key: 'fixtureCrossOriginPort', default: '47812', description: 'Second fixture port used as a separate origin for the cross-origin iframe.' },
+  { env: 'INCOGNITON_MCP_TOKEN', key: 'mcpToken', default: '', description: 'MCP token for the MCP examples (Incogniton app: My Account > Settings > MCP Token). SECRET: it can drive your profiles. Keep it only in .env, which git ignores.' },
+  { env: 'INCOGNITON_MCP_SESSION_ID', key: 'mcpSessionId', default: '', description: 'Desktop session to launch on when your account has several logged-in sessions (the MCP example lists them). Use the id of THIS machine: the Incogniton app log shows "authenticated successfully (session_id=...)".' },
+  { env: 'INCOGNITON_MCP_URL', key: 'mcpUrl', default: 'https://v5api.incogniton.com/mcp', description: 'Hosted Incogniton MCP endpoint (JSON-RPC over HTTPS).' },
 ];
 
 export const ENV_FILE = resolve(process.cwd(), '.env');
@@ -148,7 +157,19 @@ export function loadConfig(
     maxConcurrency: int('MAX_CONCURRENCY', '2', 1, 32),
     fixturePort: int('FIXTURE_PORT', '47811', 1024, 65535),
     fixtureCrossOriginPort: int('FIXTURE_CROSS_ORIGIN_PORT', '47812', 1024, 65535),
+    mcpToken: raw('INCOGNITON_MCP_TOKEN', ''),
+    mcpSessionId: raw('INCOGNITON_MCP_SESSION_ID', ''),
+    mcpUrl: raw('INCOGNITON_MCP_URL', 'https://v5api.incogniton.com/mcp'),
   };
+  if (config.mcpToken && !/^mcp_[A-Za-z0-9_]+$/.test(config.mcpToken)) {
+    problems.push('INCOGNITON_MCP_TOKEN does not look like an MCP token (expected mcp_live_...).');
+  }
+  if (config.mcpSessionId && !/^\d+$/.test(config.mcpSessionId)) {
+    problems.push(`INCOGNITON_MCP_SESSION_ID="${config.mcpSessionId}" must be a numeric session id.`);
+  }
+  if (!/^https:\/\//.test(config.mcpUrl) && !/^http:\/\/(127\.0\.0\.1|localhost)[:/]/.test(config.mcpUrl)) {
+    problems.push('INCOGNITON_MCP_URL must be https:// (or http:// on localhost for local testing).');
+  }
   if (config.fixturePort === config.fixtureCrossOriginPort) {
     problems.push('FIXTURE_PORT and FIXTURE_CROSS_ORIGIN_PORT must differ.');
   }
