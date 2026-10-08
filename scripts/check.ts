@@ -55,7 +55,17 @@ step('npm scripts referenced in Markdown exist', scriptProblems.length === 0, sc
 step('relative Markdown links resolve', linkProblems.length === 0, linkProblems.join('; '));
 
 // Leak guard: no absolute local paths, private repo names or obvious secrets in tracked text files.
-const tracked = spawnSync('git', ['ls-files', '--cached', '--others', '--exclude-standard'], { encoding: 'utf8' }).stdout.split('\n').filter(Boolean);
+const IGNORED = ['node_modules', '.git', 'output', '.venv', '.incogniton', '.scratch', '.ruff_cache', '__pycache__'];
+function allFiles(dir: string): string[] {
+  return readdirSync(dir).flatMap((name) => {
+    if (IGNORED.includes(name) || name === '.env') return [];
+    const path = join(dir, name);
+    return statSync(path).isDirectory() ? allFiles(path) : [path.replaceAll('\\', '/')];
+  });
+}
+// Prefer git's view (tracked + untracked, honouring .gitignore); fall back to a directory walk without git.
+const gitList = spawnSync('git', ['ls-files', '--cached', '--others', '--exclude-standard'], { encoding: 'utf8' });
+const tracked = gitList.status === 0 && gitList.stdout ? gitList.stdout.split('\n').filter(Boolean) : allFiles('.');
 const leakPatterns = [/[A-Z]:\\(?:Users|incogniton)/i, /IncognitonV5|IncognitonAPI_V5|incogniton-api-js-client|incogniton-api-python-client/, /proxy_password"\s*:\s*"[^"*]/i, /-----BEGIN [A-Z ]*PRIVATE KEY-----/];
 const leaks: string[] = [];
 for (const file of tracked) {
