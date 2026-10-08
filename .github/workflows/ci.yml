@@ -1,0 +1,60 @@
+# Hosted CI: everything that does not need the Incogniton desktop app.
+# Live Incogniton verification runs separately (live.yml) on a dedicated self-hosted machine.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  node:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.3
+          cache: npm
+      - run: npm ci
+      - name: Static checks (types, unit/contract tests, manifest, docs drift, links, leak guard)
+        run: npm run check
+      - name: Install Chromium for fixture tests (conventional browser, not Incogniton)
+        run: npx playwright install --with-deps chromium
+        if: runner.os == 'Linux'
+      - run: npx playwright install chromium
+        if: runner.os != 'Linux'
+      - name: Fixture tests
+        run: npm run test:fixtures
+      - name: Doctor reports the missing app correctly (expects exit code 3)
+        shell: bash
+        run: |
+          set +e
+          npm run doctor -- --json > doctor.json
+          code=$?
+          cat doctor.json
+          test "$code" -eq 3
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python -m ruff check
+      - run: python -m ruff format --check examples/python
+      - run: python -m compileall -q examples/python
+      - name: Python examples fail fast with exit code 2 when no profile is configured
+        run: |
+          set +e
+          python examples/python/playwright/launch_profile_and_screenshot.py
+          test $? -eq 2

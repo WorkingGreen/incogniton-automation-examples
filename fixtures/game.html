@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Coin collector canvas fixture</title>
+  <link rel="stylesheet" href="/fixture.css">
+  <style>
+    /* The canvas is drawn at 480x320 but displayed larger, so automation must
+       convert between canvas pixels and CSS/page coordinates. */
+    #game { width: 720px; height: 480px; }
+  </style>
+</head>
+<body>
+  <main style="max-width: 780px">
+    <h1>Coin collector</h1>
+    <p>Click START on the canvas, then use the arrow keys to collect all three coins.
+       Keys are only handled while the canvas has keyboard focus.</p>
+    <canvas id="game" width="480" height="320" tabindex="0" aria-label="Coin collector game"></canvas>
+    <p id="game-status" role="status" aria-live="polite">Not started</p>
+  </main>
+  <script>
+    const COLS = 24, ROWS = 16, CELL = 20;
+    const COLORS = { background: '#0f1720', grid: '#1b2633', player: '#2f80ff', coin: '#ffc83d', text: '#ffffff', button: '#2e9d57' };
+    const START_BUTTON = { x: 180, y: 140, w: 120, h: 40 };
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const statusEl = document.getElementById('game-status');
+    let state;
+
+    function reset() {
+      state = { phase: 'idle', player: { x: 2, y: 2 }, coins: [{ x: 9, y: 4 }, { x: 16, y: 12 }, { x: 21, y: 5 }], collected: 0, moves: 0 };
+      draw();
+    }
+
+    function draw() {
+      ctx.fillStyle = COLORS.background;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = COLORS.grid;
+      ctx.lineWidth = 1;
+      for (let x = 0; x <= COLS; x++) { ctx.beginPath(); ctx.moveTo(x * CELL + 0.5, 0); ctx.lineTo(x * CELL + 0.5, canvas.height); ctx.stroke(); }
+      for (let y = 0; y <= ROWS; y++) { ctx.beginPath(); ctx.moveTo(0, y * CELL + 0.5); ctx.lineTo(canvas.width, y * CELL + 0.5); ctx.stroke(); }
+      if (state.phase === 'idle') {
+        ctx.fillStyle = COLORS.button;
+        ctx.fillRect(START_BUTTON.x, START_BUTTON.y, START_BUTTON.w, START_BUTTON.h);
+        ctx.fillStyle = COLORS.text;
+        ctx.font = 'bold 18px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('START', START_BUTTON.x + START_BUTTON.w / 2, START_BUTTON.y + START_BUTTON.h / 2);
+        return;
+      }
+      for (const coin of state.coins) {
+        ctx.fillStyle = COLORS.coin;
+        ctx.beginPath();
+        ctx.arc(coin.x * CELL + CELL / 2, coin.y * CELL + CELL / 2, CELL / 2 - 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.fillStyle = COLORS.player;
+      ctx.fillRect(state.player.x * CELL + 2, state.player.y * CELL + 2, CELL - 4, CELL - 4);
+      ctx.fillStyle = COLORS.text;
+      ctx.font = '14px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillText(`Coins ${state.collected}/3`, 6, 4);
+      if (state.phase === 'complete') {
+        ctx.font = 'bold 26px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('ROUND COMPLETE', canvas.width / 2, canvas.height / 2 - 13);
+      }
+    }
+
+    function updateStatus() {
+      statusEl.textContent = state.phase === 'complete'
+        ? `Round complete: ${state.collected}/3 coins in ${state.moves} moves`
+        : `Playing: ${state.collected}/3 coins, ${state.moves} moves`;
+      document.body.dataset.phase = state.phase;
+    }
+
+    // Canvas pixel coordinates from a pointer event, accounting for CSS scaling and the
+    // border (getBoundingClientRect includes the border; the drawing surface does not).
+    function canvasPoint(event) {
+      const rect = canvas.getBoundingClientRect();
+      const left = rect.left + canvas.clientLeft, top = rect.top + canvas.clientTop;
+      return { x: (event.clientX - left) * (canvas.width / canvas.clientWidth), y: (event.clientY - top) * (canvas.height / canvas.clientHeight) };
+    }
+
+    canvas.addEventListener('mousedown', (event) => {
+      canvas.focus();
+      if (state.phase !== 'idle') return;
+      const p = canvasPoint(event);
+      const b = START_BUTTON;
+      if (p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h) {
+        state.phase = 'playing';
+        updateStatus();
+        draw();
+      }
+    });
+
+    const DIRECTIONS = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+    const held = new Set();
+    canvas.addEventListener('keydown', (event) => {
+      const dir = DIRECTIONS[event.key];
+      if (!dir) return;
+      event.preventDefault();
+      // One move per physical press: auto-repeat while held is ignored, so a
+      // tap (key down + key up) moves exactly one cell.
+      if (event.repeat || held.has(event.key) || state.phase !== 'playing') return;
+      held.add(event.key);
+      state.player.x = Math.max(0, Math.min(COLS - 1, state.player.x + dir[0]));
+      state.player.y = Math.max(0, Math.min(ROWS - 1, state.player.y + dir[1]));
+      state.moves += 1;
+      const hit = state.coins.findIndex((c) => c.x === state.player.x && c.y === state.player.y);
+      if (hit >= 0) { state.coins.splice(hit, 1); state.collected += 1; }
+      if (state.collected === 3) state.phase = 'complete';
+      updateStatus();
+      draw();
+    });
+    canvas.addEventListener('keyup', (event) => held.delete(event.key));
+    canvas.addEventListener('blur', () => held.clear());
+
+    // Fixture-only observation API. Real games rarely expose state like this;
+    // the example uses it only to cross-check its screenshot-based observation.
+    window.fixtureGame = {
+      getState: () => JSON.parse(JSON.stringify({ phase: state.phase, player: state.player, coins: state.coins, collected: state.collected, moves: state.moves })),
+      grid: { cols: COLS, rows: ROWS, cell: CELL },
+      colors: COLORS,
+    };
+    reset();
+  </script>
+</body>
+</html>

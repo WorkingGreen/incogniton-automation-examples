@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Incogniton automation fixture</title>
+  <link rel="stylesheet" href="/fixture.css">
+</head>
+<body>
+  <main id="app" data-ready="false">
+    <h1>Incogniton automation fixture</h1>
+    <p>This local page is served by the examples so every run has a stable, controlled target.</p>
+    <dl>
+      <dt>User agent</dt><dd id="user-agent">loading…</dd>
+      <dt>Languages</dt><dd id="languages">loading…</dd>
+      <dt>Screen</dt><dd id="screen">loading…</dd>
+    </dl>
+    <p id="status" role="status">Loading…</p>
+  </main>
+  <script>
+    // Simulates an app that renders after a short delay, so examples must wait
+    // for a meaningful ready condition instead of the load event alone.
+    setTimeout(() => {
+      document.getElementById('user-agent').textContent = navigator.userAgent;
+      document.getElementById('languages').textContent = navigator.languages.join(', ');
+      document.getElementById('screen').textContent = `${screen.width}x${screen.height}`;
+      document.getElementById('status').textContent = 'Fixture ready';
+      document.getElementById('app').dataset.ready = 'true';
+    }, 300);
+  </script>
+</body>
+</html>

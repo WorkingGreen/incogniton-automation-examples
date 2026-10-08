@@ -1,0 +1,54 @@
+{
+  "name": "incogniton-automation-examples",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Official Incogniton automation starter: runnable Playwright, Puppeteer, Python and Selenium examples for the Incogniton antidetect browser.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/WorkingGreen/incogniton-automation-examples.git"
+  },
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "setup": "tsx scripts/setup.ts",
+    "doctor": "tsx scripts/doctor.ts",
+    "profiles": "tsx scripts/profiles.ts",
+    "session": "tsx scripts/session.ts",
+    "start": "tsx starter/src/main.ts",
+    "example:screenshot": "tsx examples/playwright/launch-profile-and-screenshot.ts",
+    "example:form": "tsx examples/playwright/click-and-fill-form.ts",
+    "example:persistence": "tsx examples/playwright/reuse-profile-session.ts",
+    "example:iframe": "tsx examples/playwright/interact-with-iframe.ts",
+    "example:game": "tsx examples/playwright/control-canvas-game.ts",
+    "example:multi": "tsx examples/playwright/run-multiple-profiles.ts",
+    "example:attach": "tsx examples/playwright/attach-to-running-profile.ts",
+    "example:temp-profile": "tsx examples/playwright/create-and-clean-up-profile.ts",
+    "example:extract": "tsx examples/playwright/extract-paginated-data.ts",
+    "example:files": "tsx examples/playwright/upload-and-download-files.ts",
+    "example:network": "tsx examples/playwright/intercept-network-requests.ts",
+    "example:puppeteer:screenshot": "tsx examples/puppeteer/launch-profile-and-screenshot.ts",
+    "example:puppeteer:persistence": "tsx examples/puppeteer/reuse-profile-session.ts",
+    "fixtures": "tsx scripts/serve-fixtures.ts",
+    "typecheck": "tsc -p .",
+    "test": "node --import tsx --test \"tests/unit/**/*.test.ts\"",
+    "test:fixtures": "node --import tsx --test \"tests/fixtures/**/*.test.ts\"",
+    "test:live": "tsx scripts/verify-examples.ts",
+    "docs:generate": "tsx scripts/generate-docs.ts",
+    "docs:check": "tsx scripts/generate-docs.ts --check",
+    "check": "tsx scripts/check.ts"
+  },
+  "dependencies": {
+    "incogniton": "1.0.17",
+    "playwright": "1.64.0",
+    "playwright-core": "1.64.0",
+    "puppeteer-core": "22.15.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3"
+  }
+}

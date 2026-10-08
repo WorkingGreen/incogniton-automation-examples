@@ -1,0 +1,53 @@
+# Live verification against a real Incogniton desktop app.
+#
+# Runs only on manual dispatch, on a dedicated self-hosted runner labelled `incogniton`
+# (Windows or macOS, Incogniton app running and logged in to a low-privilege test account).
+# It never runs for pull requests, so untrusted fork code cannot reach the authenticated machine.
+# Protect the `incogniton-live` environment with required reviewers.
+#
+# Repository variables (not secrets; profile IDs are not credentials):
+#   INCOGNITON_TEST_PROFILE_ID   dedicated test profile
+#   INCOGNITON_API_PORT          optional, default 35000
+name: live-incogniton
+
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: 'Comma-separated example IDs (empty = everything, incl. failure paths)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  live:
+    runs-on: [self-hosted, incogniton]
+    environment: incogniton-live
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - name: Python environment
+        shell: bash
+        run: |
+          python -m venv .venv
+          if [ -x .venv/Scripts/python.exe ]; then PY=.venv/Scripts/python.exe; else PY=.venv/bin/python; fi
+          $PY -m pip install -r requirements.lock
+      - name: Configure (non-interactive)
+        run: npm run setup -- --non-interactive --profile-id ${{ vars.INCOGNITON_TEST_PROFILE_ID }} --port ${{ vars.INCOGNITON_API_PORT || '35000' }}
+      - run: npm run doctor -- --launch
+      - name: Live verification
+        shell: bash
+        run: |
+          if [ -n "${{ inputs.only }}" ]; then npm run test:live -- --only "${{ inputs.only }}"; else npm run test:live; fi
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-verification
+          path: |
+            docs/compatibility.json
+            output/verify/
+          retention-days: 30

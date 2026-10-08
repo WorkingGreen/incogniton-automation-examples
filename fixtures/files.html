@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Upload and download fixture</title>
+  <link rel="stylesheet" href="/fixture.css">
+</head>
+<body>
+  <main>
+    <h1>Upload and download fixture</h1>
+    <label for="upload">Choose a text file</label>
+    <input id="upload" type="file" accept=".txt,.csv">
+    <output id="upload-result" role="status">No file selected</output>
+    <p><a id="download" href="/download/report.csv">Download report.csv</a></p>
+  </main>
+  <script>
+    document.getElementById('upload').addEventListener('change', async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      const lines = text.split(/\r?\n/).filter(Boolean).length;
+      document.getElementById('upload-result').textContent = `Uploaded ${file.name}: ${file.size} bytes, ${lines} lines`;
+    });
+  </script>
+</body>
+</html>

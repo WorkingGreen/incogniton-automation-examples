@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Iframe fixture</title>
+  <link rel="stylesheet" href="/fixture.css">
+</head>
+<body>
+  <main>
+    <h1>Iframe fixture</h1>
+    <p>Two embedded frames load after a delay: one from this origin and one from a
+       second local origin (a different port, so it is cross-origin).</p>
+    <h2>Same-origin frame</h2>
+    <div id="same-slot"></div>
+    <h2>Cross-origin frame</h2>
+    <div id="cross-slot"></div>
+    <p id="parent-status" role="status">Parent has received no message</p>
+  </main>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const crossPort = params.get('crossPort') || '47812';
+    function addFrame(slot, title, src) {
+      const frame = document.createElement('iframe');
+      frame.title = title;
+      frame.name = title.toLowerCase().replace(/\s+/g, '-');
+      frame.src = src;
+      document.getElementById(slot).append(frame);
+    }
+    // Delayed insertion: automation must wait for the frame, not assume it exists.
+    setTimeout(() => addFrame('same-slot', 'Counter frame', '/frames/counter.html'), 400);
+    setTimeout(() => addFrame('cross-slot', 'Message frame', `http://127.0.0.1:${crossPort}/frames/message.html?parentOrigin=${encodeURIComponent(location.origin)}`), 700);
+    window.addEventListener('message', (event) => {
+      if (event.origin !== `http://127.0.0.1:${crossPort}`) return;
+      document.getElementById('parent-status').textContent = `Parent received: ${event.data}`;
+    });
+  </script>
+</body>
+</html>

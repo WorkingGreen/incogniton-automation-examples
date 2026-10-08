@@ -1,0 +1,5 @@
+# Direct Python dependencies for the Python examples (tested versions, pinned exactly).
+# Install the fully resolved set instead: python -m pip install -r requirements.lock
+incogniton==0.3.0
+playwright==1.63.0
+selenium==4.50.0

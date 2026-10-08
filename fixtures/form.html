@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Signup form fixture</title>
+  <link rel="stylesheet" href="/fixture.css">
+</head>
+<body>
+  <main>
+    <h1>Signup form fixture</h1>
+    <form id="signup" novalidate>
+      <label for="full-name">Full name</label>
+      <input id="full-name" name="fullName" type="text" autocomplete="off" required>
+      <label for="plan">Plan</label>
+      <select id="plan" name="plan" required>
+        <option value="">Choose a plan</option>
+        <option value="free">Free</option>
+        <option value="pro">Pro</option>
+        <option value="team">Team</option>
+      </select>
+      <label><input id="terms" name="terms" type="checkbox"> I accept the fixture terms</label>
+      <button type="submit">Submit</button>
+    </form>
+    <output id="result" role="status" aria-live="polite"></output>
+  </main>
+  <script>
+    const form = document.getElementById('signup');
+    const result = document.getElementById('result');
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const name = String(data.get('fullName') || '').trim();
+      const plan = String(data.get('plan') || '');
+      if (!name || !plan || !data.get('terms')) {
+        result.textContent = 'Error: name, plan and terms are required';
+        return;
+      }
+      result.textContent = 'Submitting…';
+      // Simulated server round trip: examples must wait for the final text.
+      setTimeout(() => {
+        const label = form.querySelector(`option[value="${plan}"]`).textContent;
+        result.textContent = `Submitted: ${name} (${label} plan)`;
+      }, 400);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Product catalogue fixture</title>
+  <link rel="stylesheet" href="/fixture.css">
+</head>
+<body>
+  <main>
+    <h1>Product catalogue</h1>
+    <p>25 deterministic products, 10 per page. Pages load from <code>/api/products?page=N</code>.</p>
+    <table aria-label="Products">
+      <thead><tr><th scope="col">SKU</th><th scope="col">Name</th><th scope="col">Price</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <nav aria-label="Pagination">
+      <button id="prev" type="button">Previous</button>
+      <span id="page-label" role="status">Loading…</span>
+      <button id="next" type="button">Next</button>
+    </nav>
+  </main>
+  <script>
+    let page = 1, pages = 1;
+    async function load(target) {
+      document.getElementById('page-label').textContent = 'Loading…';
+      const response = await fetch(`/api/products?page=${target}`);
+      const data = await response.json();
+      page = data.page; pages = data.pages;
+      document.getElementById('rows').replaceChildren(...data.items.map((item) => {
+        const tr = document.createElement('tr');
+        for (const value of [item.sku, item.name, item.price.toFixed(2)]) {
+          const td = document.createElement('td'); td.textContent = value; tr.append(td);
+        }
+        return tr;
+      }));
+      document.getElementById('page-label').textContent = `Page ${page} of ${pages}`;
+      document.getElementById('prev').disabled = page <= 1;
+      document.getElementById('next').disabled = page >= pages;
+    }
+    document.getElementById('prev').addEventListener('click', () => load(page - 1));
+    document.getElementById('next').addEventListener('click', () => load(page + 1));
+    load(1);
+  </script>
+</body>
+</html>

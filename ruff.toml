@@ -1,0 +1,7 @@
+line-length = 160
+target-version = "py39"
+include = ["examples/python/**/*.py", "tests/**/*.py"]
+
+[lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["UP007", "UP045"]

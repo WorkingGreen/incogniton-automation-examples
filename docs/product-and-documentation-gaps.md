@@ -1,0 +1,40 @@
+# Product and documentation gaps (maintainers)
+
+Findings from building and verifying this repository (2026-10-08). "Verified" means observed against a real Incogniton desktop app on Windows Server 2022 with Chrome 152 profiles; "source" means read from the published package code. This starter works around each gap and says so in code comments. Its default install path uses only released packages: `incogniton@1.0.17` (npm) and `incogniton==0.3.0` (PyPI).
+
+## Documentation discrepancies investigated
+
+| # | Observation in the public docs | Resolution (what actually works) | Evidence |
+| --- | --- | --- | --- |
+| 1 | The quickstart declares `profileId` but constructs `new IncognitonBrowser({ headless: true })` without it | Pass it: `new IncognitonBrowser({ profileId, headless })` or `startPlaywright(profileId)`. Without it the launch request has no profile and fails | source: `IncognitonBrowser.startPlaywright` sends `profileID: profileId \|\| this.config.profileId` |
+| 2 | The Node.js SDK reference lists snake_case names (`client.profile.get_status`, `client.automation.launch_puppeteer_custom`, `browser.start_playwright`) | Node.js uses camelCase: `getStatus`, `launchPuppeteerCustom`, `startPlaywright`, `forceStop`, `launchForceLocal`, `switchProxy`. snake_case is the Python SDK | `incogniton@1.0.17` `dist/api/incogniton.client.d.ts` |
+| 3 | Profile-creation examples use different shapes | Node: `client.profile.add({ profileData: { general_profile_information: { profile_name } } })`. Python: `await client.profile.add({"profileData": {...}})`. Only `profile_name` is needed; the app fills in the fingerprint, newest browser version, group "Unassigned" and host OS. The ID is returned as `profile_browser_id` | verified (`create-and-clean-up-profile`) |
+| 4 | Playwright examples use `browser.newPage()` | In Playwright that creates a **new, empty context** without the profile's cookies/storage. Use `browser.contexts()[0].newPage()` | verified: localStorage written in the default context is not visible in `browser.newContext()` |
+| 5 | Some examples call `client.profile.launch(id)` and then `IncognitonBrowser.startPlaywright()` | Launch once, for automation (`launchPuppeteerCustom` or `startPlaywright`). `profile.launch` returns no CDP endpoint, and launching an already-open profile fails | verified: second launch → `{"status":"error","message":"Browser for '<name>' exited 21 ..."}` after ~26 s |
+| 6 | A manual connection guide waits `delay(30000)` after launching | Poll `GET <puppeteerUrl>/json/version` with a deadline, then connect with bounded retries; launches took 1.3–1.7 s on the test host | verified |
+
+## Product / SDK gaps
+
+| Gap | Impact | Workaround in this repository | Suggested fix |
+| --- | --- | --- | --- |
+| `GET /profile/stop/{id}` terminates Chrome before it flushes storage | **Verified data loss**: cookie and localStorage written just before `stop` were missing after relaunch (IndexedDB kept) | Close via CDP `Browser.close`, wait for `Ready`; `stop` only as fallback, with a warning in `result.json` | Attempt a graceful browser close (with a short timeout) before terminating |
+| Launching an already-open profile: ~26 s, error `exited 21`, and the status then reads `Ready` while the browser still runs | Slow failure; wrong status misleads schedulers and UIs | Status preflight; refuse with exit 5 | Reject immediately when not `Ready`; do not reset the status on that path |
+| No API returns the CDP endpoint of a running profile | Cannot attach to a profile opened in the app or by another process | `npm run session -- start` records the endpoint for later attach | Return the existing endpoint for automation-launched profiles, or add an endpoint query route |
+| Errors use HTTP 200 with `{"status":"error"}`; the SDKs neither throw nor type it for launch calls | Callers that only check HTTP success treat failures as success | Helpers check `status === 'ok'` | Throw a typed error in the SDKs |
+| npm `incogniton@1.0.17` types: `profile.list()` says `profiles` (wire: `profileData`); `ProfileStatus` is lowercase (wire: `Ready`, `Launched`, …) | Type-correct code is wrong at runtime | Casts with comments | Publish the newer SDK source, which fixes `list()`; fix the status union |
+| npm `IncognitonBrowser` (1.0.17): `process.removeAllListeners('SIGINT')`, emoji debug output, `launchTimeout` (ms) passed as seconds, `close()` only disconnects Playwright, internal client ignores `port` | Host app signal handlers lost; noisy logs; profile left running | Examples call `IncognitonClient` methods directly | Release the newer SDK source (fixes the SIGINT, timeout and logging points); make `close()` stop the profile |
+| npm `HttpError`/`TimeoutError` do not set `name` | Error classification by name fails | `instanceof` checks | Set `name`; expose the network error code |
+| `connectOverCDP` intermittently waits for its full timeout when a restored tab is mid-navigation (Playwright 1.64, Chrome 152) | `IncognitonBrowser.startPlaywright()` can hang 30 s | Wait for settled tabs (`/json/list`), per-attempt timeout, bounded retries | Same readiness logic in the SDK |
+| Python `incogniton==0.3.0`: fixed 35 s HTTP timeout, no option | Slow launches / stop+sync can exceed it | Status polling instead of long blocking calls | Add a `timeout` parameter to `IncognitonClient` |
+| Python `IncognitonBrowser.start_selenium()` adds `--headless=new` to WebDriver options, but the app starts the browser before WebDriver attaches | `headless=True` has no effect on that path (source reading) | Example passes headless via `launch_selenium_custom(id, '--headless=new')` | Pass headless as launch `customArgs` |
+| Selenium path: the first `driver.get(<http(s) URL>)` intermittently never completes (roughly 1 in 3 launches on the test host); after ~60 s the session is deleted (`invalid session id ... browser has closed the connection`). `data:` URLs and the CDP path were not affected | Flaky Selenium runs | Page-load timeout = action timeout, classified error with hint; no automatic relaunch | Capture chromedriver verbose logs on the app's grid node during a failing run; cause not yet identified |
+| `puppeteer-core` peer range `^22` in the npm SDK | Forces an old Puppeteer major (npm audit reports advisories in its dependency tree) | Pinned 22.15.0 (tested) | Test and widen the peer range |
+| No app-version or entitlement endpoint | Doctor cannot report the app version or plan entitlement | Reported as `unknown` | Add `GET /version` (app + browser versions) |
+
+## Not verified / blocked in this repository
+
+- macOS hosts: documented by the product, not run here.
+- Persistence of very recent writes through Selenium's `driver.quit()` path.
+- Fingerprint behaviour in additional (non-default) browser contexts.
+- Cloud-sync completion: the API gives no signal that an upload succeeded.
+- Hosted CI with a live app: blocked (needs a logged-in desktop app); see [validation-report.md](validation-report.md).

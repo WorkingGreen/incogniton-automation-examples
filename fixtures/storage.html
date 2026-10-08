@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Storage fixture</title>
+  <link rel="stylesheet" href="/fixture.css">
+</head>
+<body>
+  <main>
+    <h1>Storage fixture</h1>
+    <p>The reuse-profile-session example writes and reads test values for this origin.
+       Values are prefixed <code>starter_</code>; the reset phase removes only those.</p>
+    <dl>
+      <dt>Cookie starter_cookie</dt><dd id="cookie">-</dd>
+      <dt>localStorage starter_local</dt><dd id="local">-</dd>
+      <dt>IndexedDB starter_db / kv / starter_idb</dt><dd id="idb">-</dd>
+    </dl>
+  </main>
+  <script>
+    const cookie = document.cookie.split('; ').find((c) => c.startsWith('starter_cookie='));
+    document.getElementById('cookie').textContent = cookie ? cookie.split('=')[1] : '(not set)';
+    document.getElementById('local').textContent = localStorage.getItem('starter_local') ?? '(not set)';
+    const open = indexedDB.open('starter_db', 1);
+    open.onupgradeneeded = () => open.result.createObjectStore('kv');
+    open.onsuccess = () => {
+      const get = open.result.transaction('kv').objectStore('kv').get('starter_idb');
+      get.onsuccess = () => {
+        document.getElementById('idb').textContent = get.result ?? '(not set)';
+        open.result.close();
+      };
+    };
+  </script>
+</body>
+</html>

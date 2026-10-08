@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/WorkingGreen/incogniton-automation-examples/examples/index.schema.json",
+  "title": "Incogniton automation examples manifest",
+  "description": "Authoritative index of runnable examples. Documentation pages, the README table and llms.txt are generated from it (npm run docs:generate).",
+  "type": "object",
+  "required": ["schemaVersion", "repository", "examples"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "const": 1 },
+    "repository": { "type": "string", "format": "uri" },
+    "examples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "question", "questions", "summary", "language", "framework", "source", "doc", "command", "prerequisites", "configKeys", "expectedResult", "lifecycle", "failures", "related", "verify"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "description": "Stable identifier; also the docs page name." },
+          "title": { "type": "string", "description": "Natural-language page title." },
+          "question": { "type": "string", "description": "Primary question the example answers." },
+          "questions": { "type": "array", "items": { "type": "string" }, "description": "Other phrasings of the question." },
+          "summary": { "type": "string" },
+          "language": { "enum": ["typescript", "python"] },
+          "framework": { "enum": ["playwright", "puppeteer", "selenium"] },
+          "source": { "type": "string", "description": "Repository-relative path of the runnable source." },
+          "doc": { "type": "string", "description": "Repository-relative path of the generated docs page." },
+          "command": { "type": "string", "description": "Exact command to run from the repository root." },
+          "selfContained": { "type": "boolean", "description": "True when the source uses only the SDK, the framework and Node/Python built-ins." },
+          "prerequisites": { "type": "array", "items": { "enum": ["api", "profile", "two-profiles", "session", "python"] } },
+          "configKeys": { "type": "array", "items": { "type": "string" } },
+          "expectedResult": { "type": "string", "description": "Observable pass condition." },
+          "lifecycle": { "type": "string", "description": "Launch/stop/persistence behaviour." },
+          "failures": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["symptom", "cause", "fix"],
+              "properties": { "symptom": { "type": "string" }, "cause": { "type": "string" }, "fix": { "type": "string" } }
+            }
+          },
+          "related": { "type": "array", "items": { "type": "string" }, "description": "IDs of related examples." },
+          "verify": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["args", "needs"],
+            "properties": {
+              "args": { "type": "array", "items": { "type": "string" } },
+              "needs": { "type": "array", "items": { "enum": ["api", "profile", "two-profiles", "session", "python"] } }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,42 @@
+name: Bug report
+description: An example or script does not behave as documented
+labels: [bug]
+body:
+  - type: input
+    id: example
+    attributes:
+      label: Example ID or command
+      description: e.g. `reuse-profile-session` or `npm run doctor`
+    validations:
+      required: true
+  - type: dropdown
+    id: framework
+    attributes:
+      label: Language / framework
+      options: [TypeScript + Playwright, TypeScript + Puppeteer, Python + Playwright, Python + Selenium, starter app, scripts]
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: OS + version, Node.js (`node --version`), Python if used, Incogniton app version (Help/About), profile browser version
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: "`npm run doctor -- --json` output"
+      render: json
+  - type: textarea
+    id: result
+    attributes:
+      label: Sanitized result.json and console output
+      description: From output/<example-id>/<timestamp>/. Check it contains no cookies, proxy credentials or personal data before posting.
+      render: text
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect, and what happened?
+    validations:
+      required: true

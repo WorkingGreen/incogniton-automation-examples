@@ -1,0 +1,11 @@
+node_modules/
+output/
+.env
+.incogniton/
+.venv/
+__pycache__/
+*.pyc
+.ruff_cache/
+.scratch/
+*.log
+.DS_Store

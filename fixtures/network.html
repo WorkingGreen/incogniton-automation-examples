@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Network fixture</title>
+  <link rel="stylesheet" href="/fixture.css">
+</head>
+<body>
+  <main>
+    <h1>Network fixture</h1>
+    <p>The page requests <code>/api/quote</code> and loads a tracking pixel from <code>/pixel.gif</code>.</p>
+    <p id="quote" role="status">Loading quote…</p>
+    <p id="pixel-status">Pixel pending</p>
+    <!-- Inline handlers: a blocked request can fail before any later script runs. -->
+    <img id="pixel" src="/pixel.gif" alt="" width="1" height="1"
+         onload="document.getElementById('pixel-status').textContent = 'Pixel loaded'"
+         onerror="document.getElementById('pixel-status').textContent = 'Pixel blocked'">
+  </main>
+  <script>
+    fetch('/api/quote')
+      .then((response) => response.json())
+      .then((data) => { document.getElementById('quote').textContent = `Quote: ${data.text} (source: ${data.source})`; })
+      .catch(() => { document.getElementById('quote').textContent = 'Quote failed'; });
+  </script>
+</body>
+</html>

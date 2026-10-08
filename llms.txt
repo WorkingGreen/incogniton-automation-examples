@@ -1,0 +1,34 @@
+# Incogniton automation examples
+
+> Official, runnable examples for automating the Incogniton antidetect browser with Playwright, Puppeteer (Node.js/TypeScript) and Playwright/Selenium (Python) through the local Incogniton API and the official SDKs (`incogniton` on npm and PyPI).
+
+Key facts: the Incogniton desktop app must be running and logged in (Windows/macOS); the API listens on 127.0.0.1:35000. Launch with the SDK, connect over CDP, and use the profile's default context (`browser.contexts()[0]`) for persistent cookies/storage. Stop with CDP `Browser.close` and wait for status `Ready`; `profile.stop()` terminates the browser process.
+
+## Start here
+- [README and quickstart](https://github.com/WorkingGreen/incogniton-automation-examples#readme)
+- [Example manifest (JSON)](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/examples/index.json)
+- [Lifecycle and persistence](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/lifecycle-and-persistence.md)
+- [Troubleshooting and exit codes](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/troubleshooting.md)
+- [Compatibility data](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/compatibility.json)
+- [Unattended execution](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/unattended-execution.md)
+
+## Examples
+- [Launch an Incogniton profile with Playwright and take a screenshot](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/launch-profile-and-screenshot.md): How do I automate Incogniton with Playwright?
+- [Fill and submit a form in an Incogniton profile with Playwright](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/click-and-fill-form.md): How do I click buttons and fill forms in an Incogniton profile?
+- [Keep cookies, localStorage and IndexedDB between Incogniton automation runs](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/reuse-profile-session.md): How do I preserve cookies and localStorage in Incogniton automation?
+- [Automate same-origin and cross-origin iframes in Incogniton with Playwright](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/interact-with-iframe.md): How do I automate an iframe in an Incogniton profile?
+- [Control a canvas game with keyboard and mouse in Incogniton (Playwright)](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/control-canvas-game.md): How do I automate a canvas game in an Incogniton profile?
+- [Run multiple Incogniton profiles concurrently with Playwright](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/run-multiple-profiles.md): How do I run multiple Incogniton profiles concurrently?
+- [Attach Playwright to an Incogniton profile that is already running](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/attach-to-running-profile.md): How do I connect to an existing Incogniton profile without restarting it?
+- [Create and delete a temporary Incogniton profile with the Node.js SDK](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/create-and-clean-up-profile.md): How do I create an Incogniton profile from code?
+- [Extract a paginated table to JSON in an Incogniton profile](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/extract-paginated-data.md): How do I scrape a paginated table with Playwright in Incogniton?
+- [Upload and download files in an Incogniton profile with Playwright](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/upload-and-download-files.md): How do I upload and download files with Playwright in Incogniton?
+- [Mock and block network requests in an Incogniton profile with Playwright](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/intercept-network-requests.md): How do I intercept or mock network requests in Incogniton automation?
+- [Launch an Incogniton profile with Puppeteer and take a screenshot](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/puppeteer-launch-profile-and-screenshot.md): How do I automate Incogniton with Puppeteer?
+- [Keep cookies and storage between Incogniton runs with Puppeteer](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/puppeteer-reuse-profile-session.md): How do I keep a Puppeteer session logged in across Incogniton runs?
+- [Take screenshots with the Incogniton Python SDK and Playwright](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/python-playwright-launch-profile-and-screenshot.md): How do I take screenshots using the Incogniton Python SDK?
+- [Keep cookies and localStorage between runs with the Incogniton Python SDK](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/python-playwright-reuse-profile-session.md): How do I preserve cookies with Incogniton and Playwright for Python?
+- [Automate an Incogniton profile with Selenium in Python](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/docs/examples/python-selenium-launch-profile-and-screenshot.md): How do I use Selenium with Incogniton?
+
+## Optional
+- [All example pages in one file](https://github.com/WorkingGreen/incogniton-automation-examples/blob/main/llms-full.txt)
