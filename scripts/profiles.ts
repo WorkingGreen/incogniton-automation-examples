@@ -6,24 +6,21 @@
 //   npm run profiles -- created                          (profiles this checkout created)
 //   npm run profiles -- delete-created [--yes]           (deletes ONLY recorded profiles)
 // Output never includes proxy credentials or cookie data.
-import { parseArgs } from 'node:util';
 import { flagOverrides, loadConfig } from '../lib/config.js';
 import { EXIT_CODES, failureKindOf, fromSdkError } from '../lib/errors.js';
 import { createApi, getProfileStatus } from '../lib/incogniton.js';
 import { createRecordedProfile, deleteRecordedProfile } from '../lib/profiles.js';
 import { reportFatal } from '../lib/run.js';
 import { readCreatedProfiles } from '../lib/state.js';
+import { parseCli } from '../lib/cli.js';
 
-const { values, positionals } = parseArgs({
-  options: {
+const { values, positionals } = parseCli(import.meta.url, {
     json: { type: 'boolean' },
     search: { type: 'string' },
     name: { type: 'string' },
     yes: { type: 'boolean' },
     port: { type: 'string' },
-  },
-  allowPositionals: true,
-});
+  }, true);
 const [command = 'list', argument] = positionals;
 
 interface General {

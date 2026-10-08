@@ -24,7 +24,11 @@ npm ci
 ```
 
 ```bash
-npm run setup
+npm run profiles -- list
+```
+
+```bash
+npm run setup -- --profile-id <your-test-profile-id>
 ```
 
 ```bash
@@ -35,7 +39,7 @@ npm run doctor
 npm run example:screenshot
 ```
 
-`npm run setup` asks for the API port and profile ID. Use `npm run setup -- --profile-id <id>` (or `--non-interactive`) for scripts and coding agents. List profile IDs with `npm run profiles -- list`.
+`npm run profiles -- list` prints profile IDs, names and groups (add `--search <text>` to filter). `npm run setup -- --profile-id <id>` writes `.env` without prompts. A bare `npm run setup` asks questions interactively instead, and `npm run setup -- --create-test-profile` creates and selects a new test profile.
 
 Expected output of the last command:
 
@@ -91,7 +95,7 @@ Each link is a standalone page with prerequisites, the exact command, complete c
 | [How do I keep a Puppeteer session logged in across Incogniton runs?](docs/examples/puppeteer-reuse-profile-session.md) | TypeScript · puppeteer | `npm run example:puppeteer:persistence` | verified 2026-10-08 |
 | [How do I take screenshots using the Incogniton Python SDK?](docs/examples/python-playwright-launch-profile-and-screenshot.md) | Python · playwright | `python examples/python/playwright/launch_profile_and_screenshot.py` | verified 2026-10-08 |
 | [How do I preserve cookies with Incogniton and Playwright for Python?](docs/examples/python-playwright-reuse-profile-session.md) | Python · playwright | `python examples/python/playwright/reuse_profile_session.py` | verified 2026-10-08 |
-| [How do I use Selenium with Incogniton?](docs/examples/python-selenium-launch-profile-and-screenshot.md) | Python · selenium | `python examples/python/selenium/launch_profile_and_screenshot.py` | failed |
+| [How do I use Selenium with Incogniton?](docs/examples/python-selenium-launch-profile-and-screenshot.md) | Python · selenium | `python examples/python/selenium/launch_profile_and_screenshot.py` | verified 2026-10-08 · [known issue](docs/examples/python-selenium-launch-profile-and-screenshot.md#support-status) |
 <!-- examples:end -->
 
 More example commands:
@@ -107,6 +111,40 @@ npm run example:game -- --headed
 ```bash
 npm run example:multi -- --profile-ids <id1>,<id2>
 ```
+
+## Python examples
+
+After the Node.js quickstart (which creates `.env`), set up the locked Python environment.
+
+Windows:
+
+```bash
+python -m venv .venv
+```
+
+```bash
+.venv\Scripts\python -m pip install -r requirements.lock
+```
+
+```bash
+.venv\Scripts\python examples/python/playwright/launch_profile_and_screenshot.py
+```
+
+macOS:
+
+```bash
+python3 -m venv .venv
+```
+
+```bash
+.venv/bin/python -m pip install -r requirements.lock
+```
+
+```bash
+.venv/bin/python examples/python/playwright/launch_profile_and_screenshot.py
+```
+
+The Python examples connect to the Incogniton-launched browser, so `playwright install` (stock browser download) is not needed.
 
 ## Language and framework support
 

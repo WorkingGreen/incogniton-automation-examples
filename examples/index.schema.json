@@ -26,6 +26,7 @@
           "source": { "type": "string", "description": "Repository-relative path of the runnable source." },
           "doc": { "type": "string", "description": "Repository-relative path of the generated docs page." },
           "command": { "type": "string", "description": "Exact command to run from the repository root." },
+          "knownIssue": { "type": "string", "description": "Known product issue affecting this example; shown in docs and copied into compatibility.json notes." },
           "selfContained": { "type": "boolean", "description": "True when the source uses only the SDK, the framework and Node/Python built-ins." },
           "prerequisites": { "type": "array", "items": { "enum": ["api", "profile", "two-profiles", "session", "python"] } },
           "configKeys": { "type": "array", "items": { "type": "string" } },

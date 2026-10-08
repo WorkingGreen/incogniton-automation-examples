@@ -6,12 +6,12 @@
 //   npm run docs:check             fail (exit 1) if any generated file is out of date
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
-import { parseArgs } from 'node:util';
 import { CONFIG_KEYS } from '../lib/config.js';
 import { renderEnvExample } from '../lib/env-file.js';
 import { readManifest, validateManifest, type ExampleEntry, type Prerequisite } from '../lib/manifest.js';
+import { parseCli } from '../lib/cli.js';
 
-const { values } = parseArgs({ options: { check: { type: 'boolean' } } });
+const { values } = parseCli(import.meta.url, { check: { type: 'boolean' } });
 const manifest = readManifest();
 const pkg = JSON.parse(readFileSync('package.json', 'utf8')) as { scripts: Record<string, string>; dependencies: Record<string, string> };
 const problems = validateManifest(manifest, pkg.scripts);
@@ -70,13 +70,14 @@ function installSteps(entry: ExampleEntry): string {
   ];
   if (entry.language === 'python') {
     steps.push(
-      'Python environment (Windows PowerShell shown first, macOS second):',
+      'Python environment, **Windows** (PowerShell or cmd):',
       '```bash\npython -m venv .venv\n```',
       '```bash\n.venv\\Scripts\\python -m pip install -r requirements.lock\n```',
-      '```bash\n.venv/bin/python -m pip install -r requirements.lock\n```',
-      'Run with the environment\'s interpreter (`.venv\\Scripts\\python` on Windows, `.venv/bin/python` on macOS):',
-      fence('bash', entry.command.replace(/^python /, '.venv/bin/python ')),
       fence('bash', entry.command.replace(/^python /, '.venv\\Scripts\\python ')),
+      'Python environment, **macOS**:',
+      '```bash\npython3 -m venv .venv\n```',
+      '```bash\n.venv/bin/python -m pip install -r requirements.lock\n```',
+      fence('bash', entry.command.replace(/^python /, '.venv/bin/python ')),
     );
   } else if (entry.prerequisites.includes('session') || entry.verify.needs.includes('session')) {
     steps.push('Start a long-lived browser, attach, then stop it:', '```bash\nnpm run session -- start\n```', fence('bash', entry.command), '```bash\nnpm run session -- stop\n```');
@@ -110,7 +111,9 @@ function renderPage(entry: ExampleEntry): string {
     `Official [Incogniton](https://incogniton.com) automation example (\`${entry.id}\`, ${entry.language === 'python' ? 'Python' : 'TypeScript/Node.js'}, ${entry.framework}). Part of [incogniton-automation-examples](${manifest.repository}).`,
     `**Question:** ${entry.question}${entry.questions.length ? `\nAlso answers: ${entry.questions.map((q) => `"${q}"`).join(', ')}` : ''}`,
     `## Goal\n\n${entry.summary}`,
-    `## Support status\n\n${versionsLine(entry)} Supported hosts: Windows and macOS with the Incogniton desktop app; Linux and containers are not supported by the desktop app. See [compatibility](../compatibility.json).`,
+    `## Support status\n\n${versionsLine(entry)} Supported hosts: Windows and macOS with the Incogniton desktop app; Linux and containers are not supported by the desktop app. See [compatibility](../compatibility.json).${entry.knownIssue ? `
+
+**Known issue:** ${entry.knownIssue}` : ''}`,
     `## Prerequisites\n\n${[...new Set(['api', ...entry.prerequisites] as Prerequisite[])].map((p) => `- ${PREREQ_TEXT[p]}`).join('\n')}\n- Node.js 22.12+ (the setup scripts are Node-based for every language).`,
     `## Install and run\n\n${installSteps(entry)}`,
     `## Configuration\n\nRead from \`.env\` (created by \`npm run setup\`, documented in [.env.example](../../.env.example)); command-line flags \`--profile-id\`, \`--headed\`, \`--headless\`, \`--port\` override it.\n\n| Key | Default | Meaning |\n| --- | --- | --- |\n${config.join('\n')}`,
@@ -144,7 +147,8 @@ function exampleTable(): string {
   const rows = manifest.examples.map((e) => {
     const live = liveResult(e.id);
     const status = live ? (live.status === 'verified' ? `verified ${live.date}` : live.status) : 'unverified';
-    return `| [${e.question}](docs/examples/${e.id}.md) | ${e.language === 'python' ? 'Python' : 'TypeScript'} · ${e.framework} | \`${e.command}\` | ${status} |`;
+    const statusText = e.knownIssue ? `${status} · [known issue](docs/examples/${e.id}.md#support-status)` : status;
+    return `| [${e.question}](docs/examples/${e.id}.md) | ${e.language === 'python' ? 'Python' : 'TypeScript'} · ${e.framework} | \`${e.command}\` | ${statusText} |`;
   });
   return `| Task | Language · framework | Command | Live status |\n| --- | --- | --- | --- |\n${rows.join('\n')}`;
 }

@@ -327,6 +327,7 @@
       "prerequisites": ["profile", "python"],
       "configKeys": ["INCOGNITON_PROFILE_ID", "INCOGNITON_HEADLESS"],
       "expectedResult": "`python-selenium-launch-profile-and-screenshot: PASSED` with `Selenium filled and submitted the form ...` and `cleanup <id>: ok via webdriver-quit, final status Ready`.",
+      "knownIssue": "Intermittent: on the test host the first navigation on the Incogniton Selenium path never completed in roughly a third to a half of launches (exit 10 with a clear message). The CDP-based examples are not affected.",
       "lifecycle": "driver.quit() ends the WebDriver session; the app then stops the browser. Whether that shutdown flushes very recent cookie/localStorage writes was not verified for Selenium.",
       "failures": [
         { "symptom": "Automation service is being installed, please try again in a moment", "cause": "The app downloads its Selenium server after login.", "fix": "Wait and retry." },

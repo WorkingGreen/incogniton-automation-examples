@@ -14,6 +14,29 @@ Instructions for coding agents (and humans) changing or using this repository.
 - `tests/unit` (no browser), `tests/fixtures` (conventional browser), `scripts/verify-examples.ts` (real Incogniton).
 - `docs/examples/*.md`, `llms.txt`, `llms-full.txt`, `.env.example` — **generated**; edit the manifest/sources and run `npm run docs:generate`.
 
+## Task → command
+
+Every run prints a final line `RESULT status=<passed|failed|...> exit=<code> cleanup=<ok|failed|none> json=<absolute path of result.json>`; artifacts are listed in that `result.json`.
+
+| Task | Command | Fixture / evidence |
+| --- | --- | --- |
+| Screenshot of a page in a profile | `npm run example:screenshot` | prints `PASS: ...screenshot.png` |
+| Fill and submit a form | `npm run example:form` | `fixtures/form.html`; `after-submit.png` |
+| Keep cookies/storage between runs | `npm run example:persistence` | `fixtures/storage.html`; write + verify runs |
+| Work inside iframes | `npm run example:iframe` | `fixtures/iframe.html` |
+| Play the canvas game fixture (one round) | `npm run example:game` | `fixtures/game.html`; `complete.png` |
+| Several profiles at once | `npm run example:multi -- --profile-ids <a>,<b>` | `workers.json` |
+| Attach to a running browser | `npm run session -- start`, then `npm run example:attach`, then `npm run session -- stop` | `attached.png` |
+| Create and delete a temporary profile | `npm run example:temp-profile` | `temporary-profile.png` |
+| Scrape a paginated table | `npm run example:extract` | `products.json` |
+| Upload / download files | `npm run example:files` | `report.csv` |
+| Mock / block network requests | `npm run example:network` | `network.png` |
+| Puppeteer instead of Playwright | `npm run example:puppeteer:screenshot`, `npm run example:puppeteer:persistence` | |
+| Python | `python examples/python/playwright/launch_profile_and_screenshot.py` (venv, see README) | |
+| Your own logic | edit `starter/src/workflows/`, run `npm start -- --workflow <name>` | `output/starter/` |
+
+All scripts accept `--help`; `--headed` shows the browser window.
+
 ## Source of truth for the Incogniton API
 
 Use the **installed** SDK, not memory or older docs: `node_modules/incogniton/dist/**/*.d.ts` (npm, pinned 1.0.17) and `.venv/Lib|lib/.../site-packages/incogniton/` (PyPI, pinned 0.3.0). Node.js methods are camelCase (`client.automation.launchPuppeteerCustom`), Python snake_case (`client.automation.launch_puppeteer_custom`). Known wrong types in 1.0.17: `profile.list()` returns `profileData` (not `profiles`); status values are capitalised (`Ready`, `Launched`). See `docs/product-and-documentation-gaps.md`.

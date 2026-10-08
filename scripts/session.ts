@@ -5,18 +5,15 @@
 //   npm run session -- stop  [--profile-id <id>]
 // Incogniton's API does not return the CDP endpoint of a profile that is already open, so
 // attaching is only possible to a browser whose endpoint was recorded when it was launched.
-import { parseArgs } from 'node:util';
 import { chromium } from 'playwright-core';
 import { flagOverrides, loadConfig, requireProfileId } from '../lib/config.js';
 import { EXIT_CODES, failureKindOf } from '../lib/errors.js';
 import { createApi, getProfileStatus, launchProfile, shutdownOwnedProfile } from '../lib/incogniton.js';
 import { reportFatal } from '../lib/run.js';
 import { isCdpAlive, listSessionRecords, readSessionRecord, removeSessionRecord, writeSessionRecord } from '../lib/state.js';
+import { parseCli } from '../lib/cli.js';
 
-const { values, positionals } = parseArgs({
-  options: { 'profile-id': { type: 'string' }, headed: { type: 'boolean' }, headless: { type: 'boolean' }, port: { type: 'string' } },
-  allowPositionals: true,
-});
+const { values, positionals } = parseCli(import.meta.url, { 'profile-id': { type: 'string' }, headed: { type: 'boolean' }, headless: { type: 'boolean' }, port: { type: 'string' } }, true);
 const command = positionals[0] ?? 'list';
 
 try {

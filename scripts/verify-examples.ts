@@ -10,15 +10,15 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import { join, resolve } from 'node:path';
-import { parseArgs } from 'node:util';
 import { loadConfig, requireProfileId } from '../lib/config.js';
 import { EXIT_CODES, StarterError } from '../lib/errors.js';
 import { checkAlive, createApi, getProfileStatus, READY } from '../lib/incogniton.js';
 import { readManifest } from '../lib/manifest.js';
 import { openPlaywrightSession } from '../lib/playwright-session.js';
 import { createRecordedProfile, deleteRecordedProfile } from '../lib/profiles.js';
+import { parseCli } from '../lib/cli.js';
 
-const { values } = parseArgs({ options: { only: { type: 'string' }, 'skip-python': { type: 'boolean' } } });
+const { values } = parseCli(import.meta.url, { only: { type: 'string' }, 'skip-python': { type: 'boolean' } });
 const config = loadConfig();
 const api = createApi(config);
 const profileId = requireProfileId(config);
@@ -101,7 +101,7 @@ for (const entry of examples) {
   } else {
     result = ts(entry.source, entry.verify.args);
   }
-  record({ id: entry.id, kind: 'example', status: result.code === 0 ? 'verified' : 'failed', exitCode: result.code, durationMs: result.durationMs, command, browser: browserFrom(result.output) });
+  record({ id: entry.id, kind: 'example', status: result.code === 0 ? 'verified' : 'failed', exitCode: result.code, durationMs: result.durationMs, command, browser: browserFrom(result.output), note: entry.knownIssue ? `known issue: ${entry.knownIssue}` : undefined });
 }
 
 // ---------------------------------------------------------------- failure paths

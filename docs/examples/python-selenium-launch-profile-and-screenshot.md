@@ -13,7 +13,9 @@ Launches the profile through the app's Selenium grid (automation.launch_selenium
 
 ## Support status
 
-failed against a real Incogniton desktop app on 2026-10-08 (Windows_NT 10.0.20348 x64, Chrome 152.0.7977.54). Dependencies: incogniton 0.3.0 (PyPI), selenium 4.50.0. Supported hosts: Windows and macOS with the Incogniton desktop app; Linux and containers are not supported by the desktop app. See [compatibility](../compatibility.json).
+Verified against a real Incogniton desktop app on 2026-10-08 (Windows_NT 10.0.20348 x64, Chrome 152.0.7977.54). Dependencies: incogniton 0.3.0 (PyPI), selenium 4.50.0. Supported hosts: Windows and macOS with the Incogniton desktop app; Linux and containers are not supported by the desktop app. See [compatibility](../compatibility.json).
+
+**Known issue:** Intermittent: on the test host the first navigation on the Incogniton Selenium path never completed in roughly a third to a half of launches (exit 10 with a clear message). The CDP-based examples are not affected.
 
 ## Prerequisites
 
@@ -44,7 +46,7 @@ npm run setup -- --profile-id <your-test-profile-id>
 npm run doctor
 ```
 
-Python environment (Windows PowerShell shown first, macOS second):
+Python environment, **Windows** (PowerShell or cmd):
 
 ```bash
 python -m venv .venv
@@ -55,17 +57,21 @@ python -m venv .venv
 ```
 
 ```bash
+.venv\Scripts\python examples/python/selenium/launch_profile_and_screenshot.py
+```
+
+Python environment, **macOS**:
+
+```bash
+python3 -m venv .venv
+```
+
+```bash
 .venv/bin/python -m pip install -r requirements.lock
 ```
 
-Run with the environment's interpreter (`.venv\Scripts\python` on Windows, `.venv/bin/python` on macOS):
-
 ```bash
 .venv/bin/python examples/python/selenium/launch_profile_and_screenshot.py
-```
-
-```bash
-.venv\Scripts\python examples/python/selenium/launch_profile_and_screenshot.py
 ```
 
 ## Configuration

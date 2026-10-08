@@ -44,7 +44,7 @@ npm run setup -- --profile-id <your-test-profile-id>
 npm run doctor
 ```
 
-Python environment (Windows PowerShell shown first, macOS second):
+Python environment, **Windows** (PowerShell or cmd):
 
 ```bash
 python -m venv .venv
@@ -55,17 +55,21 @@ python -m venv .venv
 ```
 
 ```bash
+.venv\Scripts\python examples/python/playwright/launch_profile_and_screenshot.py
+```
+
+Python environment, **macOS**:
+
+```bash
+python3 -m venv .venv
+```
+
+```bash
 .venv/bin/python -m pip install -r requirements.lock
 ```
 
-Run with the environment's interpreter (`.venv\Scripts\python` on Windows, `.venv/bin/python` on macOS):
-
 ```bash
 .venv/bin/python examples/python/playwright/launch_profile_and_screenshot.py
-```
-
-```bash
-.venv\Scripts\python examples/python/playwright/launch_profile_and_screenshot.py
 ```
 
 ## Configuration

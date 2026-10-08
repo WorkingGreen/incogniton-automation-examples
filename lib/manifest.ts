@@ -16,6 +16,8 @@ export interface ExampleEntry {
   doc: string;
   command: string;
   selfContained?: boolean;
+  /** Known product issue affecting this example (shown in docs, copied into compatibility notes). */
+  knownIssue?: string;
   prerequisites: Prerequisite[];
   configKeys: string[];
   expectedResult: string;

@@ -5,11 +5,11 @@
 // Exit code 0 when no check failed; otherwise the exit code of the first failing check's kind.
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { parseArgs } from 'node:util';
 import { ENV_FILE, flagOverrides, loadConfig, type StarterConfig } from '../lib/config.js';
 import { EXIT_CODES, StarterError, sanitize, type FailureKind } from '../lib/errors.js';
 import { checkAlive, createApi, getProfileStatus, READY } from '../lib/incogniton.js';
 import { openPlaywrightSession } from '../lib/playwright-session.js';
+import { parseCli } from '../lib/cli.js';
 
 type Status = 'pass' | 'warn' | 'fail' | 'unknown' | 'skip';
 interface Check {
@@ -22,9 +22,7 @@ interface Check {
   data?: Record<string, unknown>;
 }
 
-const { values } = parseArgs({
-  options: { json: { type: 'boolean' }, launch: { type: 'boolean' }, 'profile-id': { type: 'string' }, port: { type: 'string' } },
-});
+const { values } = parseCli(import.meta.url, { json: { type: 'boolean' }, launch: { type: 'boolean' }, 'profile-id': { type: 'string' }, port: { type: 'string' } });
 const checks: Check[] = [];
 const add = (check: Check) => checks.push(check);
 

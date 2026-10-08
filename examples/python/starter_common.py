@@ -458,6 +458,9 @@ class Run:
         lines += [f"artifact: {a}" for a in self.artifacts]
         (self.dir / "summary.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
         print("\n" + "\n".join(lines) + f"\nresult: {result_path.relative_to(REPO_ROOT).as_posix()}")
+        # One stable, machine-readable line for scripts and coding agents.
+        cleanup_state = "none" if not self.cleanup else ("ok" if all(c.get("ok") for c in self.cleanup) else "failed")
+        print(f"RESULT status={result['status']} exit={result['exitCode']} cleanup={cleanup_state} json={result_path}")
         return int(result["exitCode"])
 
 

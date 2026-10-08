@@ -1,30 +1,30 @@
 // Creates or updates .env. Interactive in a terminal; non-interactive with flags or without a TTY.
 //   npm run setup                                         interactive (prompts)
-//   npm run setup -- --profile-id <id> [--port 35000] [--headless true|false]
-//   npm run setup -- --create-test-profile                create a dedicated test profile and use it
-//   npm run setup -- --non-interactive                    never prompt (CI / coding agents)
+//   npm run setup -- --profile-id <id> [--port 35000] [--headless true|false]   no prompts
+//   npm run setup -- --create-test-profile                create a dedicated test profile and use it (no prompts)
+//   npm run setup -- --non-interactive                    never prompt; only create .env from defaults if missing
 // Existing values are kept unless you pass a new value for that key.
 import { createInterface } from 'node:readline/promises';
-import { parseArgs } from 'node:util';
 import { CONFIG_KEYS, isProfileId, loadConfig, readEnvFile } from '../lib/config.js';
 import { updateEnvFile } from '../lib/env-file.js';
 import { EXIT_CODES, failureKindOf } from '../lib/errors.js';
 import { checkAlive, createApi, getProfileStatus } from '../lib/incogniton.js';
 import { createRecordedProfile } from '../lib/profiles.js';
 import { reportFatal } from '../lib/run.js';
+import { parseCli } from '../lib/cli.js';
 
-const { values } = parseArgs({
-  options: {
+const { values } = parseCli(import.meta.url, {
     'profile-id': { type: 'string' },
     port: { type: 'string' },
     headless: { type: 'string' },
     'create-test-profile': { type: 'boolean' },
     'non-interactive': { type: 'boolean' },
     yes: { type: 'boolean', short: 'y' },
-  },
-});
+  });
 
-const interactive = Boolean(process.stdin.isTTY && process.stdout.isTTY) && !values['non-interactive'] && !values.yes;
+// Any value flag means "configure exactly this": no prompts. Prompts only for a bare `npm run setup` in a terminal.
+const valueFlags = values['profile-id'] || values.port || values.headless || values['create-test-profile'];
+const interactive = Boolean(process.stdin.isTTY && process.stdout.isTTY) && !values['non-interactive'] && !values.yes && !valueFlags;
 
 async function main() {
   const existing = readEnvFile();

@@ -268,6 +268,9 @@ export async function runExample<const Extra extends NonNullable<ParseArgsConfig
   ].filter(Boolean);
   writeFileSync(join(runDir, 'summary.txt'), `${summaryLines.join('\n')}\n`);
   console.log(`\n${summaryLines.join('\n')}\nresult: ${relative(process.cwd(), resultPath).replaceAll('\\', '/')}`);
+  // One stable, machine-readable line for scripts and coding agents.
+  const cleanupState = cleanup.length === 0 ? 'none' : cleanup.every((c) => c.ok) ? 'ok' : 'failed';
+  console.log(`RESULT status=${result.status} exit=${result.exitCode} cleanup=${cleanupState} json=${resultPath}`);
   process.exitCode = result.exitCode;
 }
 
